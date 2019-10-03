@@ -2,11 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import CategoriesForm from './categoriesForm';
+import Login from './Login';
 
 const Editorial = () => {
   return (
     <div>
-      <Link to="/editorial/login">Login</Link>
+      <Login></Login>
       <CategoriesForm></CategoriesForm>
     </div>
   );
