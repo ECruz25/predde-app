@@ -1,7 +1,7 @@
 import { Button, Modal, Form, Input,Select } from 'antd';
+import withAuth from '../HOC/withAuth';
 import React from 'react';
 const { Option } = Select;
-const withAuth = require('../HOC/withAuth');
 
 
 function handleChange(value) {
