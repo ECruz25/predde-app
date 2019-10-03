@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 exports.createUser = (req, res) => {
   const { email, password } = req.body;
-  const user = new User({ email, password });
+  const user = new User({ email, password, type: 'customer' });
   user.save(err => {
     if (err) {
       res.status(500).send('Error registering new user please try again.');
