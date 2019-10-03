@@ -1,6 +1,12 @@
-import { Button, Modal, Form, Input, Radio } from 'antd';
+import { Button, Modal, Form, Input,Select } from 'antd';
 import React from 'react';
+const { Option } = Select;
+const withAuth = require('../HOC/withAuth');
 
+
+function handleChange(value) {
+  console.log(`selected ${value}`);
+}
 
 const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
@@ -11,29 +17,25 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
       return (
         <Modal
           visible={visible}
-          title="Create a new collection"
-          okText="Create"
+          title="Edit Categories"
+          okText="Save"
           onCancel={onCancel}
           onOk={onCreate}
         >
+           <Select defaultValue="New Category" style={{ width: 150 }} >
+            <Option value="drama">Drama</Option>
+            <Option value="science">Science</Option>
+            <Option value="newCategory">New Category</Option>
+
+    </Select>
           <Form layout="vertical">
-            <Form.Item label="Title">
-              {getFieldDecorator('title', {
-                rules: [{ required: true, message: 'Please input the title of collection!' }],
+            <Form.Item label="Category">
+              {getFieldDecorator('name', {
+                rules: [{ required: true, message: 'Please enter title of category!' }],
               })(<Input />)}
             </Form.Item>
             <Form.Item label="Description">
-              {getFieldDecorator('description')(<Input type="textarea" />)}
-            </Form.Item>
-            <Form.Item className="collection-create-form_last-form-item">
-              {getFieldDecorator('modifier', {
-                initialValue: 'public',
-              })(
-                <Radio.Group>
-                  <Radio value="public">Public</Radio>
-                  <Radio value="private">Private</Radio>
-                </Radio.Group>,
-              )}
+              {getFieldDecorator('description',{rules: [{required:true,message: 'Please enter description of Category'}]})(<Input type="textarea" />)}
             </Form.Item>
           </Form>
         </Modal>
@@ -42,7 +44,7 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
   },
 );
 
-class CollectionsPage extends React.Component {
+class CategoriesForm extends React.Component {
   state = {
     visible: false,
   };
@@ -74,10 +76,11 @@ class CollectionsPage extends React.Component {
 
   render() {
     return (
+    
       <div>
         <Button type="primary" onClick={this.showModal}>
-          New Collection
-        </Button>
+          Edit Categories 
+       </Button>
         <CollectionCreateForm
           wrappedComponentRef={this.saveFormRef}
           visible={this.state.visible}
@@ -90,4 +93,5 @@ class CollectionsPage extends React.Component {
 }
 
 
-export default CollectionsPage;
+// export default CategoriesForm;
+export default withAuth(CategoriesForm);
