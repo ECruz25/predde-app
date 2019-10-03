@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import CollectionsPage from './addCategoryButton';
 
 const LandingPage = () => {
   return (
@@ -23,6 +24,7 @@ const LandingPage = () => {
       >
         Editorial
       </Link>
+      <CollectionsPage></CollectionsPage>
     </div>
   );
 };
