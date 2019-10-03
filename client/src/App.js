@@ -13,7 +13,6 @@ function App() {
         <Switch>
           <Route path="/" exact component={LandingPage} />
           <Route path="/editorial" exact component={Editorial} />
-          <Route path="/editorial/login" exact component={Login} />
         </Switch>
       </Router>
     </div>

@@ -13,7 +13,7 @@ exports.createUser = (req, res) => {
   });
 };
 
-exports.authenticate = (req, res) => {
+exports.authenticate = async (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email }, (err, user) => {
     if (err) {

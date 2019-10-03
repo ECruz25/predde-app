@@ -41,12 +41,12 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
         </Modal>
       );
     }
-  },
+  }
 );
 
 class CategoriesForm extends React.Component {
   state = {
-    visible: false,
+    visible: false
   };
 
   showModal = () => {
