@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 
-const Login = ({ form: { getFieldDecorator } }) => {
+const Login = ({ form }) => {
+  const { getFieldDecorator } = form;
   const onSubmit = e => {
     e.preventDefault();
     form.validateFields((err, val) => {
