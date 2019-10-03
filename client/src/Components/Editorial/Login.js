@@ -1,73 +1,104 @@
+import { Button, Modal, Form, Input, Radio, Icon } from 'antd';
 import React from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
-import StyledLogin from './StyledComponents/StyledLogin';
 
-const Login = ({ form }) => {
-  const { getFieldDecorator } = form;
-  const handleSubmit = e => {
-    e.preventDefault();
-    form.validateFields((err, val) => {
-      if (!err) {
-        debugger;
-        fetch('/api/user/authenticate', {
-          method: 'POST',
-          body: JSON.stringify(this.state),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(res => {
-            if (res.status === 200) {
-              this.props.history.push('/');
-            } else {
-              const error = new Error(res.error);
-              throw error;
-            }
-          })
-          .catch(err => {
-            console.error(err);
-            alert('Error logging in please try again');
-          });
+const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
+  // eslint-disable-next-line
+  class extends React.Component {
+    render() {
+      const { visible, onCancel, onCreate, form } = this.props;
+      const { getFieldDecorator } = form;
+      return (
+        <Modal
+          visible={visible}
+          title="Login"
+          okText="Login"
+          onCancel={onCancel}
+          onOk={onCreate}
+        >
+          <Form layout="vertical">
+            <Form.Item label="email">
+              {getFieldDecorator('email', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input the email!'
+                  }
+                ]
+              })(<Input />)}
+            </Form.Item>
+            <Form.Item label="Password">
+              {getFieldDecorator('password')(
+                <Input
+                  prefix={
+                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  type="password"
+                  placeholder="Password"
+                />
+              )}
+            </Form.Item>
+          </Form>
+        </Modal>
+      );
+    }
+  }
+);
+
+class CollectionsPage extends React.Component {
+  state = {
+    visible: false
+  };
+
+  showModal = () => {
+    this.setState({ visible: true });
+  };
+
+  handleCancel = () => {
+    this.setState({ visible: false });
+  };
+
+  handleCreate = () => {
+    const { form } = this.formRef.props;
+    form.validateFields(async (err, values) => {
+      if (err) {
+        return;
+      }
+      const response = await fetch('/api/user/authenticate', {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.status === 200) {
+        form.resetFields();
+        this.setState({ visible: false });
+      } else {
+        console.error(err);
+        alert('Error logging in please try again');
       }
     });
   };
-  return (
-    <StyledLogin>
-      <Form onSubmit={handleSubmit} className="login-form">
-        <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }]
-          })(
-            <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }]
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
-              placeholder="Password"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-          >
-            Log in
-          </Button>
-        </Form.Item>
-      </Form>
-    </StyledLogin>
-  );
-};
-const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(Login);
 
-export default WrappedNormalLoginForm;
+  saveFormRef = formRef => {
+    this.formRef = formRef;
+  };
+
+  render() {
+    return (
+      <div>
+        <Button type="primary" onClick={this.showModal}>
+          Login
+        </Button>
+        <CollectionCreateForm
+          wrappedComponentRef={this.saveFormRef}
+          visible={this.state.visible}
+          onCancel={this.handleCancel}
+          onCreate={this.handleCreate}
+        />
+      </div>
+    );
+  }
+}
+
+export default CollectionsPage;

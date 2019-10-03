@@ -3,6 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const userRouter = require('./features/User/userRoutes');
+const categoryRoutes = require('./features/Category/categoryRoutes');
 
 var app = express();
 
@@ -16,6 +17,7 @@ app.get('/', function(req, res) {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/category', categoryRoutes);
 
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);

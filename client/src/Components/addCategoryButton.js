@@ -1,7 +1,6 @@
 import { Button, Modal, Form, Input, Radio } from 'antd';
 import React from 'react';
 
-
 const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
@@ -19,7 +18,12 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
           <Form layout="vertical">
             <Form.Item label="Title">
               {getFieldDecorator('title', {
-                rules: [{ required: true, message: 'Please input the title of collection!' }],
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input the title of collection!'
+                  }
+                ]
               })(<Input />)}
             </Form.Item>
             <Form.Item label="Description">
@@ -27,24 +31,24 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
             </Form.Item>
             <Form.Item className="collection-create-form_last-form-item">
               {getFieldDecorator('modifier', {
-                initialValue: 'public',
+                initialValue: 'public'
               })(
                 <Radio.Group>
                   <Radio value="public">Public</Radio>
                   <Radio value="private">Private</Radio>
-                </Radio.Group>,
+                </Radio.Group>
               )}
             </Form.Item>
           </Form>
         </Modal>
       );
     }
-  },
+  }
 );
 
 class CollectionsPage extends React.Component {
   state = {
-    visible: false,
+    visible: false
   };
 
   showModal = () => {
@@ -88,6 +92,5 @@ class CollectionsPage extends React.Component {
     );
   }
 }
-
 
 export default CollectionsPage;
