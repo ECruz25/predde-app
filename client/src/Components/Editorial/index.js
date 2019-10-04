@@ -111,9 +111,13 @@ const Editorial = ({ history }) => {
           </div>
         </div>
       </Header>
-      <Content style={{ padding: '0 50px' }}>
+      <Content 
+      style={{ padding: '0 50px' }}
+      >
         <Layout style={{ padding: '24px 0', background: '#fff' }}>
-          <Sider width={200} style={{ background: '#fff' }}>
+          <Sider width={200} style={{ background: '#fff' }} breakpoint="md" collapsedWidth="0" onBreakpoint={broken => { }}
+      onCollapse={(collapsed, type) => {
+      }}>
             <Menu
               mode="inline"
               defaultSelectedKeys={['1']}
@@ -153,11 +157,12 @@ const Editorial = ({ history }) => {
                       }}
                     >
                       {category.name}
+
                     </Menu.Item>
+                    
                   ))}
                 </SubMenu>
               )}
-              <CategoryForm />
             </Menu>
           </Sider>
           <Content style={{ padding: '0 24px', height: '90vh' }}>
@@ -178,10 +183,7 @@ const Editorial = ({ history }) => {
         </Layout>
       </Content>
     </Layout>
-    // <div>
-    //   <Login></Login>
-    //   <CategoriesForm></CategoriesForm>
-    // </div>
+  
   );
 };
 
