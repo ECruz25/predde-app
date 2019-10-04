@@ -54,16 +54,6 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
           onCancel={onCancel}
           onOk={onCreate}
         >
-          <Select
-            disabled
-            defaultValue="New Category"
-            style={{ width: 150 }}
-            onChange={handleChange}
-          >
-            <Option value="drama">Drama</Option>
-            <Option value="science">Science</Option>
-            <Option value="newCategory">New Category</Option>
-          </Select>
           <Form layout="vertical">
             <Form.Item label="Category">
               {getFieldDecorator('name', {

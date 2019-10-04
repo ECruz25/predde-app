@@ -1,12 +1,17 @@
-import { Button, Modal, Form, Input, Radio, Icon, Upload } from 'antd';
+import { Button, Modal, Form, Input, Radio, Icon, Upload, Select } from 'antd';
 import React from 'react';
 import withAuth from '../HOC/withAuth';
+import TextArea from 'antd/lib/input/TextArea';
+const { Option } = Select;
 
 const BookForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
+    state = {
+      categories: []
+    };
     async componentDidMount() {
-      const response = await fetch('api/categories');
+      const response = await fetch('api/category');
       const categoriesResponse = await response.json();
       this.setState({ categories: categoriesResponse });
     }
@@ -30,9 +35,25 @@ const BookForm = Form.create({ name: 'form_in_modal' })(
                     message: 'Please input the name!'
                   }
                 ]
-              })(<Input type="text" placeholder="Nombre" />)}
+              })(<Input type="text" placeholder="Nombre" autocomplete="off" />)}
             </Form.Item>
-            <Input prefix="L" />
+            <Form.Item label="price">
+              {getFieldDecorator('price', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input the price!'
+                  }
+                ]
+              })(
+                <Input
+                  prefix="L"
+                  name="price"
+                  type="number"
+                  autocomplete="off"
+                />
+              )}
+            </Form.Item>
             <Form.Item label="photo">
               {getFieldDecorator('upload', {
                 valuePropName: 'fileList',
@@ -45,15 +66,16 @@ const BookForm = Form.create({ name: 'form_in_modal' })(
                 </Upload>
               )}
             </Form.Item>
-            <Form.Item label="Password">
-              {getFieldDecorator('password')(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  type="password"
-                  placeholder="Password"
-                />
+            <Select style={{ width: 150 }} onChange={() => {}}>
+              {this.state.categories.map(category => (
+                <Option value={category._id} key={category._id}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+            <Form.Item label="description">
+              {getFieldDecorator('description')(
+                <TextArea placeholder="Descripción" autocomplete="off" />
               )}
             </Form.Item>
           </Form>
@@ -107,7 +129,7 @@ class LoginButton extends React.Component {
     return (
       <div>
         <Button type="primary" onClick={this.showModal}>
-          Login
+          Agregar Libro
         </Button>
         <BookForm
           wrappedComponentRef={this.saveFormRef}
@@ -120,4 +142,4 @@ class LoginButton extends React.Component {
   }
 }
 
-export default withAuth(BookForm);
+export default withAuth(LoginButton);

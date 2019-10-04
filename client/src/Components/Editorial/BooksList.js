@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Grid, Row, Col, Icon, InputNumber } from 'antd';
 import Book from './Book';
+import BookForm from './BookForm';
 const { Meta } = Card;
 
 const BooksList = ({ books, addToCart }) => {
@@ -16,6 +17,8 @@ const BooksList = ({ books, addToCart }) => {
       {books.map(book => (
         <Book book={book} addToCart={addToCart} />
       ))}
+
+      <BookForm></BookForm>
     </div>
   );
 };
