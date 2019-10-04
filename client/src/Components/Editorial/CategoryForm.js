@@ -5,42 +5,40 @@ const { Option } = Select;
 const { Item } = Menu;
 
 function handleChange(value) {
- getCategories();
+  getCategories();
 }
 
 const getCategories = () => {
   fetch('/api/category')
-  .then(res => {
-    if (res.status === 200) {
-      const categories = res.json();
-      console.log(categories);
-    } else {
-      const error = new Error(res.error);
-      throw error;
-
-    }
-  })
-  .catch(err => {
-    console.error(err);
-  });
-}
+    .then(res => {
+      if (res.status === 200) {
+        const categories = res.json();
+        console.log(categories);
+      } else {
+        const error = new Error(res.error);
+        throw error;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+    });
+};
 
 const addCategory = () => {
   fetch('/api/category')
-  .then(res => {
-    if (res.status === 200) {
-      const categories = res.json();
-      console.log(categories);
-    } else {
-      const error = new Error(res.error);
-      throw error;
-
-    }
-  })
-  .catch(err => {
-    console.error(err);
-  });
-}
+    .then(res => {
+      if (res.status === 200) {
+        const categories = res.json();
+        console.log(categories);
+      } else {
+        const error = new Error(res.error);
+        throw error;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+    });
+};
 
 const CategoryForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
@@ -49,7 +47,6 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
       const { visible, onCancel, onCreate, form } = this.props;
       const { getFieldDecorator } = form;
       return (
-
         <Modal
           visible={visible}
           title="Edit Categories"
@@ -57,12 +54,16 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
           onCancel={onCancel}
           onOk={onCreate}
         >
-           <Select  disabled defaultValue="New Category" style={{ width: 150 }} onChange={handleChange}>
+          <Select
+            disabled
+            defaultValue="New Category"
+            style={{ width: 150 }}
+            onChange={handleChange}
+          >
             <Option value="drama">Drama</Option>
             <Option value="science">Science</Option>
             <Option value="newCategory">New Category</Option>
-
-    </Select>
+          </Select>
           <Form layout="vertical">
             <Form.Item label="Category">
               {getFieldDecorator('name', {
@@ -111,13 +112,14 @@ class CategoryButton extends React.Component {
 
       fetch('/api/category/createCategory', {
         method: 'POST',
-        body: JSON.stringify(values), 
-        headers:{
+        body: JSON.stringify(values),
+        headers: {
           'Content-Type': 'application/json'
         }
-      }).then(res => res.json())
-      .catch(error => console.error('Error:', error))
-      .then(response => console.log('Success:', response));
+      })
+        .then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => console.log('Success:', response));
     });
   };
 

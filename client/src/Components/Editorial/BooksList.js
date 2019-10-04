@@ -1,23 +1,20 @@
-import React from 'react';
-import { Card, Grid } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Grid, Row, Col, Icon, InputNumber } from 'antd';
+import Book from './Book';
 const { Meta } = Card;
-const BooksList = () => {
-  const [books, setBooks] = useState([]);
+
+const BooksList = ({ books, addToCart }) => {
   return (
-    <div>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+        gridColumnGap: 75,
+        gridRowGap: 25
+      }}
+    >
       {books.map(book => (
-        <Card
-          hoverable
-          style={{ width: 240 }}
-          cover={
-            <img
-              alt="example"
-              src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-            />
-          }
-        >
-          <Meta title="Europe Street beat" description="www.instagram.com" />
-        </Card>
+        <Book book={book} addToCart={addToCart} />
       ))}
     </div>
   );

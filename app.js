@@ -4,9 +4,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const userRouter = require('./features/User/userRoutes');
 const categoryRoutes = require('./features/Category/categoryRoutes');
+const bookRoutes = require('./features/Book/bookRoutes');
 
 var app = express();
-
+app.use('/uploads', express.static('uploads'));
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(logger('dev'));
 app.use(express.json());
@@ -18,8 +19,6 @@ app.get('/', function(req, res) {
 
 app.use('/api/user', userRouter);
 app.use('/api/category', categoryRoutes);
-
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+app.use('/api/book', bookRoutes);
 
 module.exports = app;

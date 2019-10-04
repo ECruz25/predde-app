@@ -5,6 +5,7 @@ import './App.css';
 import LandingPage from './Components/LandingPage';
 import Login from './Components/Editorial/Login';
 import Editorial from './Components/Editorial';
+import BooksList from './Components/Editorial/BooksList';
 
 function App() {
   return (
@@ -13,6 +14,8 @@ function App() {
         <Switch>
           <Route path="/" exact component={LandingPage} />
           <Route path="/editorial" exact component={Editorial} />
+          <Route path="/editorial/libros/:categoryId" component={BooksList} />
+          <Route path="/editorial/libros" exact component={BooksList} />
         </Switch>
       </Router>
     </div>
