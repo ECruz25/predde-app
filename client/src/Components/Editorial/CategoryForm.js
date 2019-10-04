@@ -1,14 +1,14 @@
-import { Button, Modal, Form, Input,Select } from 'antd';
+import { Button, Modal, Form, Input, Select, Menu, Icon } from 'antd';
 import withAuth from '../HOC/withAuth';
-import React from 'react';
+import React, { Fragment } from 'react';
 const { Option } = Select;
-
+const { Item } = Menu;
 
 function handleChange(value) {
   console.log(`selected ${value}`);
 }
 
-const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
+const CategoryForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
     render() {
@@ -22,20 +22,23 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
           onCancel={onCancel}
           onOk={onCreate}
         >
-           <Select defaultValue="New Category" style={{ width: 150 }} >
-            <Option value="drama">Drama</Option>
-            <Option value="science">Science</Option>
-            <Option value="newCategory">New Category</Option>
-
-    </Select>
           <Form layout="vertical">
             <Form.Item label="Category">
               {getFieldDecorator('name', {
-                rules: [{ required: true, message: 'Please enter title of category!' }],
+                rules: [
+                  { required: true, message: 'Please enter title of category!' }
+                ]
               })(<Input />)}
             </Form.Item>
             <Form.Item label="Description">
-              {getFieldDecorator('description',{rules: [{required:true,message: 'Please enter description of Category'}]})(<Input type="textarea" />)}
+              {getFieldDecorator('description', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please enter description of Category'
+                  }
+                ]
+              })(<Input type="textarea" />)}
             </Form.Item>
           </Form>
         </Modal>
@@ -44,7 +47,7 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
   }
 );
 
-class CategoriesForm extends React.Component {
+class CategoryButton extends React.Component {
   state = {
     visible: false
   };
@@ -75,23 +78,25 @@ class CategoriesForm extends React.Component {
   };
 
   render() {
+    debugger;
     return (
-    
-      <div>
-        <Button type="primary" onClick={this.showModal}>
-          Edit Categories 
-       </Button>
-        <CollectionCreateForm
+      <Fragment>
+        {!this.props.edit ? (
+          <Button type="primary" onClick={this.showModal}>
+            Edit Categories
+          </Button>
+        ) : (
+          <Icon type="edit" onClick={this.showModal} />
+        )}
+        <CategoryForm
           wrappedComponentRef={this.saveFormRef}
           visible={this.state.visible}
           onCancel={this.handleCancel}
           onCreate={this.handleCreate}
         />
-      </div>
+      </Fragment>
     );
   }
 }
 
-
-// export default CategoriesForm;
-export default withAuth(CategoriesForm);
+export default withAuth(CategoryButton);

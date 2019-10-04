@@ -1,24 +1,32 @@
 const Category = require('./Category.js');
-const jwt = require('jsonwebtoken');
 
-exports.createCategory = (req, res) => {
-  const { name, description, image } = req.body;
-  const category = new Category({ name, description, image });
-  category.save(err => {
-    if (err) {
-      res.status(500).send('Error registering new category please try again.');
-    } else {
-      res.status(200).send('Adding category sucessfull');
-    }
-  });
-};
-
-exports.getCategories = (req, res) => {
+exports.getCategories = async (req, res) => {
   try {
-    const categories = Category.find();
+    const categories = await Category.find();
     res.send(categories);
   } catch (error) {
     console.log(error);
     res.send(500);
+  }
+};
+
+exports.createCategory = async (req, res) => {
+  try {
+    const category = new Category(req.body);
+    await category.save();
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.updateCategory = async (req, res) => {
+  try {
+    const category = await Category.findByIdAndUpdate(req.body.id, req.body);
+    await category.save();
+    res.sendStatus(200);
+  } catch (error) {
+    res.sendStatus(500);
   }
 };

@@ -4,9 +4,6 @@ const withAuth = require('../Authentication/middleware');
 
 router.get('/', categoryController.getCategories);
 router.post('/', withAuth, categoryController.createCategory);
-// router.post('/authenticate', userController.authenticate);
-router.get('/checkToken', withAuth, function(req, res) {
-  res.sendStatus(200);
-});
+router.put('/', withAuth, categoryController.updateCategory);
 
 module.exports = router;

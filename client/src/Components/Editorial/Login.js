@@ -1,7 +1,7 @@
 import { Button, Modal, Form, Input, Radio, Icon } from 'antd';
 import React from 'react';
 
-const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
+const LoginForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
     render() {
@@ -44,7 +44,7 @@ const CollectionCreateForm = Form.create({ name: 'form_in_modal' })(
   }
 );
 
-class CollectionsPage extends React.Component {
+class LoginButton extends React.Component {
   state = {
     visible: false
   };
@@ -90,7 +90,7 @@ class CollectionsPage extends React.Component {
         <Button type="primary" onClick={this.showModal}>
           Login
         </Button>
-        <CollectionCreateForm
+        <LoginForm
           wrappedComponentRef={this.saveFormRef}
           visible={this.state.visible}
           onCancel={this.handleCancel}
@@ -101,4 +101,4 @@ class CollectionsPage extends React.Component {
   }
 }
 
-export default CollectionsPage;
+export default LoginButton;
