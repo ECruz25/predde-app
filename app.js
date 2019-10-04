@@ -5,6 +5,7 @@ var logger = require('morgan');
 const userRouter = require('./features/User/userRoutes');
 const categoryRoutes = require('./features/Category/categoryRoutes');
 const bookRoutes = require('./features/Book/bookRoutes');
+const orderRoutes = require('./features/Order/orderRoutes');
 
 var app = express();
 app.use('/uploads', express.static('uploads'));
@@ -20,5 +21,6 @@ app.get('/', function(req, res) {
 app.use('/api/user', userRouter);
 app.use('/api/category', categoryRoutes);
 app.use('/api/book', bookRoutes);
+app.use('/api/order', bookRoutes);
 
 module.exports = app;

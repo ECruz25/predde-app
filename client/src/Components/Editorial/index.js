@@ -7,6 +7,7 @@ import withAuth from '../HOC/withAuth';
 import CategoryForm from './CategoryForm';
 import BooksList from './BooksList';
 import Cart from './Cart';
+import CompleteOrderForm from './CompleteOrderForm';
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -18,6 +19,7 @@ const Editorial = ({ history }) => {
   const [isLoadingBooks, setIsloadingBooks] = useState(true);
   const [books, setBooks] = useState(true);
   const [cart, setCart] = useState({});
+  const [showCompleteOrderForm, setShowCompleteOrderForm] = useState(false);
 
   const fetchBooks = useCallback(async () => {
     if (selectedCategory) {
@@ -34,7 +36,7 @@ const Editorial = ({ history }) => {
   }, [selectedCategory]);
 
   useEffect(() => {
-    const cartInStorage = localStorage.getItem('predde-cart') || [];
+    const cartInStorage = JSON.parse(localStorage.getItem('predde-cart')) || {};
     setCart(cartInStorage);
   }, []);
 
@@ -77,11 +79,12 @@ const Editorial = ({ history }) => {
         amount: newCart[book._id].amount + book.amount
       };
       setCart(newCart);
-      localStorage.setItem('predde-cart', newCart);
+      localStorage.setItem('predde-cart', JSON.stringify(newCart));
     } else {
       newCart[book._id] = JSON.parse(JSON.stringify(book));
       setCart(newCart);
-      localStorage.setItem('predde-cart', newCart);
+      localStorage.setItem('predde-cart', JSON.stringify(newCart));
+      debugger;
     }
   };
 
@@ -101,7 +104,10 @@ const Editorial = ({ history }) => {
         >
           {!isLoggedIn && <Login />}
           <div style={{ marginTop: 2 }}>
-            <Cart cart={cart} history={history} />
+            <Cart
+              cart={cart}
+              setShowCompleteOrderForm={setShowCompleteOrderForm}
+            />
           </div>
         </div>
       </Header>
@@ -165,6 +171,7 @@ const Editorial = ({ history }) => {
                   fetchBooks={fetchBooks}
                   isLoggedIn={isLoggedIn}
                 />
+                {showCompleteOrderForm && <CompleteOrderForm cart={cart} />}
               </Fragment>
             )}
           </Content>

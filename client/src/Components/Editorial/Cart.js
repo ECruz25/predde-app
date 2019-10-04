@@ -38,7 +38,7 @@ const columns = [
   }
 ];
 
-const Cart = ({ cart, history }) => {
+const Cart = ({ cart, setShowCompleteOrderForm }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
 
@@ -60,7 +60,6 @@ const Cart = ({ cart, history }) => {
           onClick={() => setIsOpen(true)}
         ></Button>
       </Badge>
-
       {isOpen && (
         <Modal
           visible={isOpen}
@@ -68,7 +67,8 @@ const Cart = ({ cart, history }) => {
           okText="Completar Orden"
           onCancel={() => setIsOpen(false)}
           onOk={() => {
-            history.push('editorial/completar-orden', [data]);
+            setIsOpen(false);
+            setShowCompleteOrderForm(true);
           }}
         >
           <Table columns={columns} dataSource={data} />
