@@ -24,10 +24,11 @@ exports.createCategory = async (req, res) => {
 
 exports.updateCategory = async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.body.id, req.body);
+    const category = await Category.findByIdAndUpdate(req.body._id, req.body);
     await category.save();
     res.sendStatus(200);
   } catch (error) {
+  console.log(error);    
     res.sendStatus(500);
   }
 };

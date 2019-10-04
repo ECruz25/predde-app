@@ -3,6 +3,7 @@ const categoryController = require('./categoryController');
 const withAuth = require('../Authentication/middleware');
 
 router.get('/', categoryController.getCategories);
+router.put('/updateCategory', withAuth, categoryController.updateCategory);
 router.post('/createCategory', withAuth, categoryController.createCategory);
 router.put('/checkToken', withAuth, categoryController.updateCategory);
 
