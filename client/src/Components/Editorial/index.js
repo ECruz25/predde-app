@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import Login from './Login';
@@ -18,24 +18,7 @@ const Editorial = () => {
   const [books, setBooks] = useState(true);
   const [cart, setCart] = useState({});
 
-  useEffect(() => {
-    checkLoggedIn();
-    fetchCategories();
-    fetchBooks();
-  }, []);
-
-  useEffect(() => {
-    fetchBooks();
-  }, [selectedCategory]);
-
-  const fetchCategories = async () => {
-    const response = await fetch('api/category');
-    const categoriesList = await response.json();
-    setCategories(categoriesList);
-    setIsLoadingCategories(false);
-  };
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     if (selectedCategory) {
       const response = await fetch(`api/book/category/${selectedCategory._id}`);
       const booksList = await response.json();
@@ -47,6 +30,23 @@ const Editorial = () => {
       setBooks(booksList || []);
       setIsloadingBooks(false);
     }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    checkLoggedIn();
+    fetchCategories();
+    fetchBooks();
+  }, [fetchBooks]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks, selectedCategory]);
+
+  const fetchCategories = async () => {
+    const response = await fetch('api/category');
+    const categoriesList = await response.json();
+    setCategories(categoriesList);
+    setIsLoadingCategories(false);
   };
 
   const checkLoggedIn = () => {
@@ -88,10 +88,11 @@ const Editorial = () => {
               defaultSelectedKeys={['1']}
               defaultOpenKeys={['sub1']}
               style={{ height: '100%' }}
+              inlineCollapsed
             >
               {isLoadingCategories ? (
-                <div>
-                  <Skeleton paragraph={{ rows: 8 }} />
+                <div style={{ width: 100, marginLeft: 20 }}>
+                  <Skeleton paragraph={{ rows: 12 }} active />
                 </div>
               ) : (
                 <SubMenu

@@ -18,16 +18,22 @@ const multerOptions = {
 exports.upload = multer(multerOptions).single('image');
 
 exports.resize = async (req, res, next) => {
-  if (!req.file) {
+  try {
+    if (!req.file) {
+      next();
+      return;
+    }
+    const extension = req.file.mimetype.split('/')[1];
+    req.body.photo = `${uuid.v4()}.${extension}`;
+    req.body.image = req.file.buffer;
+    const photo = await jimp.read(req.file.buffer);
+    await photo.resize(800, jimp.AUTO);
+    await photo.write(`./client/public/books/${req.body.photo}`);
     next();
+  } catch (error) {
+    console.log(error);
     return;
   }
-  const extension = req.file.mimetype.split('/')[1];
-  req.body.photo = `${uuid.v4()}.${extension}`;
-  const photo = await jimp.read(req.file.buffer);
-  await photo.resize(800, jimp.AUTO);
-  await photo.write(`../client/public/books/${req.body.photo}`);
-  next();
 };
 
 exports.getBooks = async (req, res) => {
@@ -60,24 +66,46 @@ exports.getBooksByCategory = async (req, res) => {
 exports.createBook = async (req, res) => {
   try {
     if (req.body.price > 0) {
-      const book = new Book({ ...req.body, image: req.body.photo });
+      console.log(req.body);
+      const book = new Book({
+        ...req.body,
+        image: req.body.photo
+      });
+
       await book.save();
-      res.send(200);
+      res.sendStatus(200);
     } else {
-      res.send(500);
+      res.sendStatus(500);
     }
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.sendStatus(500);
   }
 };
 
 exports.updateBook = async (req, res) => {
   try {
+    console.log(req.body);
     const book = await Book.findByIdAndUpdate(req.body.id, req.body);
     await book.save();
     res.sendStatus(200);
   } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+exports.updateBookWithImage = async (req, res) => {
+  try {
+    console.log(req.body);
+    const book = await Book.findByIdAndUpdate(req.body.id, {
+      ...req.body,
+      image: req.body.photo
+    });
+    await book.save();
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 };

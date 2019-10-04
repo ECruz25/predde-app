@@ -1,5 +1,6 @@
 import { Button, Modal, Form, Input, Radio, Icon, Upload, Select } from 'antd';
-import React from 'react';
+import axios from 'axios';
+import React, { Fragment } from 'react';
 import withAuth from '../HOC/withAuth';
 import TextArea from 'antd/lib/input/TextArea';
 const { Option } = Select;
@@ -8,37 +9,58 @@ const BookForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
     state = {
-      categories: []
+      categories: [],
+      image: {}
     };
     async componentDidMount() {
       const response = await fetch('api/category');
       const categoriesResponse = await response.json();
       this.setState({ categories: categoriesResponse });
     }
+
     render() {
-      const { visible, onCancel, onCreate, form } = this.props;
+      const {
+        visible,
+        onCancel,
+        onCreate,
+        form,
+        onHandleImageChange,
+        book,
+        handleEditBook,
+        isEditing
+      } = this.props;
       const { getFieldDecorator } = form;
+
       return (
         <Modal
           visible={visible}
-          title="Login"
-          okText="Login"
+          title={isEditing ? book.name : 'Nuevo Libro'}
+          okText="Guardar"
           onCancel={onCancel}
-          onOk={onCreate}
+          onOk={isEditing ? handleEditBook : onCreate}
         >
           <Form layout="vertical">
-            <Form.Item label="name">
+            <Form.Item label="Nombre">
               {getFieldDecorator('name', {
+                initialValue: book.name,
                 rules: [
                   {
                     required: true,
-                    message: 'Please input the name!'
+                    message: 'Ingrese el nombre del libro'
                   }
                 ]
-              })(<Input type="text" placeholder="Nombre" autocomplete="off" />)}
+              })(
+                <Input
+                  type="text"
+                  placeholder="Nombre"
+                  autocomplete="off"
+                  id="name"
+                />
+              )}
             </Form.Item>
-            <Form.Item label="price">
+            <Form.Item label="Precio">
               {getFieldDecorator('price', {
+                initialValue: book.price,
                 rules: [
                   {
                     required: true,
@@ -51,31 +73,71 @@ const BookForm = Form.create({ name: 'form_in_modal' })(
                   name="price"
                   type="number"
                   autocomplete="off"
+                  defaultValue={book.price}
                 />
               )}
             </Form.Item>
-            <Form.Item label="photo">
-              {getFieldDecorator('upload', {
-                valuePropName: 'fileList',
-                getValueFromEvent: this.normFile
-              })(
-                <Upload name="logo" action="/upload.do" listType="picture">
-                  <Button>
-                    <Icon type="upload" /> Click to upload
-                  </Button>
-                </Upload>
+            <Form.Item label="Imagen">
+              {getFieldDecorator('upload')(
+                <div
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
+                >
+                  <input
+                    type="file"
+                    name="file"
+                    id="photo"
+                    accept="image/gif, image/png, image/jpeg"
+                    onChange={onHandleImageChange}
+                    required
+                  />
+                  {book.image && !this.props.hasChangedImage && (
+                    <img
+                      alt="example"
+                      src={`/books/${book.image}`}
+                      style={{ height: 32, width: 32 }}
+                    />
+                  )}
+                </div>
               )}
             </Form.Item>
-            <Select style={{ width: 150 }} onChange={() => {}}>
-              {this.state.categories.map(category => (
-                <Option value={category._id} key={category._id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
-            <Form.Item label="description">
-              {getFieldDecorator('description')(
-                <TextArea placeholder="Descripción" autocomplete="off" />
+            <Form.Item label="Categoria">
+              {getFieldDecorator('category', {
+                initialValue: book.category,
+                rules: [
+                  {
+                    required: true,
+                    message: 'Ingrese la categoria'
+                  }
+                ]
+              })(
+                <Select
+                  defaultValue={book.category}
+                  style={{ width: 150 }}
+                  onChange={() => {}}
+                >
+                  {this.state.categories.map(category => (
+                    <Option value={category._id} key={category._id}>
+                      {category.name}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+            <Form.Item label="Descripción">
+              {getFieldDecorator('description', {
+                initialValue: book.description,
+                rules: [
+                  {
+                    required: true,
+                    message: 'Porfavor incluya la descripción!'
+                  }
+                ]
+              })(
+                <TextArea
+                  defaultValue={book.description}
+                  placeholder="Descripción"
+                  autocomplete="off"
+                />
               )}
             </Form.Item>
           </Form>
@@ -85,9 +147,10 @@ const BookForm = Form.create({ name: 'form_in_modal' })(
   }
 );
 
-class LoginButton extends React.Component {
+class BookButton extends React.Component {
   state = {
-    visible: false
+    visible: false,
+    hasChangedImage: false
   };
 
   showModal = () => {
@@ -98,26 +161,99 @@ class LoginButton extends React.Component {
     this.setState({ visible: false });
   };
 
+  onHandleImageChange = ({ target }) => {
+    this.setState({ image: target.files[0], hasChangedImage: true });
+  };
+
   handleCreate = () => {
+    const { form } = this.formRef.props;
+    const { image } = this.state;
+    form.validateFields(async (err, { name, price, category, description }) => {
+      if (err) {
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', image);
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', category);
+      formData.append('description', description);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      };
+      axios
+        .post('/api/book/', formData, config)
+        .then(response => {
+          alert(`Se ha creado el libro: ${name}`);
+          this.setState({ visible: false });
+          form.resetFields();
+        })
+        .catch(error => {
+          alert(error);
+        });
+    });
+  };
+
+  handleEditBook = () => {
+    if (this.state.image) {
+      this.handleEditBookImage();
+      return;
+    }
     const { form } = this.formRef.props;
     form.validateFields(async (err, values) => {
       if (err) {
         return;
       }
-      const response = await fetch('/api/user/authenticate', {
-        method: 'POST',
-        body: JSON.stringify(values),
+      const config = {
         headers: {
           'Content-Type': 'application/json'
         }
-      });
-      if (response.status === 200) {
-        form.resetFields();
-        this.setState({ visible: false });
-      } else {
-        console.error(err);
-        alert('Error logging in please try again');
+      };
+      const request = { ...values, id: this.props.book._id };
+      axios
+        .put('/api/book', request, config)
+        .then(response => {
+          alert(`Se ha modificado el libro: ${values.name}`);
+          this.setState({ visible: false });
+          form.resetFields();
+        })
+        .catch(error => {
+          alert(error);
+        });
+    });
+  };
+
+  handleEditBookImage = () => {
+    const { form } = this.formRef.props;
+    const { image } = this.state;
+    form.validateFields(async (err, { name, price, category, description }) => {
+      if (err) {
+        return;
       }
+      const formData = new FormData();
+      formData.append('image', image);
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', category);
+      formData.append('description', description);
+      formData.append('id', this.props.book._id);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      };
+      axios
+        .put('/api/book/withImage', formData, config)
+        .then(response => {
+          alert(`Se ha modificado el libro: ${name}`);
+          this.setState({ visible: false });
+          form.resetFields();
+        })
+        .catch(error => {
+          alert(error);
+        });
     });
   };
 
@@ -128,18 +264,29 @@ class LoginButton extends React.Component {
   render() {
     return (
       <div>
-        <Button type="primary" onClick={this.showModal}>
-          Agregar Libro
-        </Button>
-        <BookForm
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.visible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-        />
+        {this.props.showAsIcon ? (
+          <Icon type="edit" key="edit" onClick={this.showModal} />
+        ) : (
+          <Button type="primary" onClick={this.showModal}>
+            Agregar Libro
+          </Button>
+        )}
+        {this.state.visible && (
+          <BookForm
+            wrappedComponentRef={this.saveFormRef}
+            visible={this.state.visible}
+            onCancel={this.handleCancel}
+            onCreate={this.handleCreate}
+            onHandleImageChange={this.onHandleImageChange}
+            isEditing={this.props.isEditing}
+            handleEditBook={this.handleEditBook}
+            book={this.props.book || { name: '', price: 0, description: '' }}
+            hasChangedImage={this.state.hasChangedImage}
+          />
+        )}
       </div>
     );
   }
 }
 
-export default withAuth(LoginButton);
+export default withAuth(BookButton);
