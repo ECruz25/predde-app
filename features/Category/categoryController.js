@@ -4,9 +4,10 @@ exports.getCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     res.send(categories);
+    console.log(categories);
   } catch (error) {
     console.log(error);
-    res.send(500);
+    res.send(600);
   }
 };
 

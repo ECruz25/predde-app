@@ -62,7 +62,6 @@ const Editorial = () => {
                     <Link to={`editorial/libros/${category._id}`}>
                       {category.name}
                     </Link>
-                    <CategoryForm edit />
                   </Menu.Item>
                 ))}
                 <CategoryForm />
