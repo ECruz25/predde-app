@@ -32,3 +32,12 @@ exports.updateCategory = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    await Category.findByIdAndDelete(req.body._id);
+    res.send(200);
+  } catch (error) {
+    res.send(500);
+  }
+};

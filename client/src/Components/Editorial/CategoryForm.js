@@ -1,26 +1,9 @@
-import { Button, Modal, Form, Input, Select, Menu, Icon, Divider } from 'antd';
+import { Button, Modal, Form, Input, Select, Menu, Icon, Divider, Popconfirm } from 'antd';
 import withAuth from '../HOC/withAuth';
 import React, { Fragment } from 'react';
 const { Option } = Select;
 
-function handleChange(value) {
-  getCategories();
-}
 
-const getCategories = () => {
-  fetch('/api/category')
-    .then(res => {
-      if (res.status === 200) {
-        const categories = res.json();
-      } else {
-        const error = new Error(res.error);
-        throw error;
-      }
-    })
-    .catch(err => {
-      console.error(err);
-    });
-};
 
 
 
@@ -30,7 +13,7 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
 
 
     render() {
-      const { visible, onCancel, onCreate, form, onChangeCategory,category } = this.props;
+      const { visible, onCancel, onCreate, form, onChangeCategory, category, onDelete } = this.props;
       const { getFieldDecorator } = form;
       return (
         <Modal
@@ -69,6 +52,9 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
                 ]
               })(<Input type="textarea" />)}
             </Form.Item>
+            <Popconfirm disabled={category.name === ""} onConfirm={onDelete} placement="bottom" title={'Desea eliminar categoria?'} okText="Yes" cancelText="No" icon={<Icon type="question-circle-o" style={{ color: 'red' }} />}>
+              <Button disabled={category.name === ""} >Eliminar Categoria</Button>
+            </Popconfirm>
           </Form>
         </Modal>
       );
@@ -79,13 +65,20 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
 class CategoryButton extends React.Component {
   state = {
     visible: false,
-    selectedCategory: {},
+    selectedCategory: {
+    
+name:""
+    },
+    
     categories: [],
-
   };
 
 
   async componentDidMount() {
+    this.getCategory();
+  }
+
+  async getCategory() {
     const response = await fetch('api/category');
     const categoriesResponse = await response.json();
     this.setState({ categories: categoriesResponse });
@@ -105,10 +98,24 @@ class CategoryButton extends React.Component {
 
   };
 
+  deleteCategory = () => {
+    fetch('/api/category/deleteCategory', {
+      method: 'PUT',
+      body: JSON.stringify(this.state.selectedCategory),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .catch(error => console.error('Error:', error))
+      .then(response => console.log('Success:', response));
+
+  };
+
   editCategory = (values) => {
     fetch('/api/category/updateCategory', {
       method: 'PUT',
-      body: JSON.stringify({...this.state.selectedCategory,...values}),
+      body: JSON.stringify({ ...this.state.selectedCategory, ...values }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -127,10 +134,14 @@ class CategoryButton extends React.Component {
   };
 
   handleChangeCategory = (value) => {
-    this.setState({ selectedCategory: this.state.categories.filter(category => category._id === value)[0] || {name:"",description:'',_id:'',__v:''} });
+    this.setState({ selectedCategory: this.state.categories.filter(category => category._id === value)[0] || { name: "", description: '', _id: '', __v: '' } });
   };
 
-
+handleDelete = () => {
+  this.deleteCategory();
+  this.setState({visible: false});
+  this.getCategory();
+}
 
   handleCreate = () => {
     const { form } = this.formRef.props;
@@ -138,18 +149,19 @@ class CategoryButton extends React.Component {
       if (err) {
         return;
       }
-      
+
       if (!this.state.selectedCategory._id) {
         console.log('crear');
-      this.addCategory(values);
+        this.addCategory(values);
       }
       if (this.state.selectedCategory._id) {
         console.log('editar');
-      this.editCategory(values);
+        this.editCategory(values);
 
       }
       form.resetFields();
       this.setState({ visible: false });
+       this.getCategory();
     });
 
   };
@@ -174,9 +186,11 @@ class CategoryButton extends React.Component {
           onCancel={this.handleCancel}
           onCreate={this.handleCreate}
           onChangeCategory={this.handleChangeCategory}
+          onDelete = {this.handleDelete}
           categories={this.state.categories}
-          category = {this.state.selectedCategory}
+          category={this.state.selectedCategory}
         />
+
       </Fragment>
     );
   }
