@@ -1,12 +1,18 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Table, Divider, Tag, Modal, Icon, Button } from 'antd';
+import { Table, Badge, Modal, Button } from 'antd';
 
 const columns = [
   {
-    title: '',
-    dataIndex: 'name',
-    key: 'name',
-    render: () => <Button icon="delete" size="small" type="danger" />
+    title: 'Portada',
+    dataIndex: 'image',
+    key: 'image',
+    render: image => (
+      <img
+        alt="example"
+        src={`/books/${image}`}
+        style={{ width: 32, height: 32 }}
+      />
+    )
   },
   {
     title: 'Nombre',
@@ -21,11 +27,18 @@ const columns = [
   {
     title: 'Total',
     dataIndex: 'total',
-    key: 'total'
+    key: 'total',
+    render: text => <span>{`L. ${text.toFixed(2)}`}</span>
+  },
+  {
+    title: '',
+    dataIndex: 'name',
+    key: 'name',
+    render: () => <Button icon="delete" size="small" type="danger" />
   }
 ];
 
-const Cart = ({ cart }) => {
+const Cart = ({ cart, history }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
 
@@ -39,24 +52,33 @@ const Cart = ({ cart }) => {
 
   return (
     <Fragment>
-      <Button
-        type="primary"
-        shape="round"
-        icon="shopping-cart"
-        size="large"
-        onClick={() => setIsOpen(true)}
-      >
-        {Object.keys(data).length}
-      </Button>
+      <Badge count={Object.keys(data).length}>
+        <Button
+          type="primary"
+          icon="shopping-cart"
+          size="large"
+          onClick={() => setIsOpen(true)}
+        ></Button>
+      </Badge>
+
       {isOpen && (
         <Modal
           visible={isOpen}
           title="Carrito"
-          okText="Ordenar"
+          okText="Completar Orden"
           onCancel={() => setIsOpen(false)}
-          //   onOk={onCreate}
+          onOk={() => {
+            history.push('editorial/completar-orden', [data]);
+          }}
         >
           <Table columns={columns} dataSource={data} />
+          <h3 style={{ textAlign: 'end' }}>
+            Total: L.
+            {data
+              .map(t => t.total)
+              .reduce((total, num) => total + num)
+              .toFixed(2)}
+          </h3>
         </Modal>
       )}
     </Fragment>

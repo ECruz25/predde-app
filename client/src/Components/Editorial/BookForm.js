@@ -1,4 +1,14 @@
-import { Button, Modal, Form, Input, Radio, Icon, Upload, Select } from 'antd';
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  Radio,
+  Icon,
+  Upload,
+  Select,
+  message
+} from 'antd';
 import axios from 'axios';
 import React, { Fragment } from 'react';
 import withAuth from '../HOC/withAuth';
@@ -186,12 +196,13 @@ class BookButton extends React.Component {
       axios
         .post('/api/book/', formData, config)
         .then(response => {
-          alert(`Se ha creado el libro: ${name}`);
+          message.success(`Se ha creado el libro: ${name}`);
           this.setState({ visible: false });
+          this.props.fetchBooks();
           form.resetFields();
         })
         .catch(error => {
-          alert(error);
+          message.error(error);
         });
     });
   };
@@ -215,12 +226,13 @@ class BookButton extends React.Component {
       axios
         .put('/api/book', request, config)
         .then(response => {
-          alert(`Se ha modificado el libro: ${values.name}`);
+          message.success(`Se ha modificado el libro: ${values.name}`);
           this.setState({ visible: false });
           form.resetFields();
+          this.props.fetchBooks();
         })
         .catch(error => {
-          alert(error);
+          message.error(error);
         });
     });
   };
@@ -247,12 +259,13 @@ class BookButton extends React.Component {
       axios
         .put('/api/book/withImage', formData, config)
         .then(response => {
-          alert(`Se ha modificado el libro: ${name}`);
+          message.success(`Se ha modificado el libro: ${name}`);
           this.setState({ visible: false });
+          this.props.fetchBooks();
           form.resetFields();
         })
         .catch(error => {
-          alert(error);
+          message.error(error);
         });
     });
   };

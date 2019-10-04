@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link, Route, Switch, BrowserRouter as Router } from 'react-router-dom';
-import logo from './logo.svg';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 import LandingPage from './Components/LandingPage';
-import Login from './Components/Editorial/Login';
 import Editorial from './Components/Editorial';
-import BooksList from './Components/Editorial/BooksList';
+import NotFoundPage from './Components/NotFoundPage';
+import CompleteOrder from './Components/Editorial/CompleteOrder';
 
 function App() {
   return (
@@ -14,8 +13,12 @@ function App() {
         <Switch>
           <Route path="/" exact component={LandingPage} />
           <Route path="/editorial" exact component={Editorial} />
-          <Route path="/editorial/libros/:categoryId" component={BooksList} />
-          <Route path="/editorial/libros" exact component={BooksList} />
+          <Route
+            path="/editorial/completar-orden"
+            exact
+            component={CompleteOrder}
+          />
+          <Route path="*" exact component={NotFoundPage} />
         </Switch>
       </Router>
     </div>

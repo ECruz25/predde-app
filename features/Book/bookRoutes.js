@@ -20,6 +20,6 @@ router.put(
   bookController.resize,
   bookController.updateBookWithImage
 );
-router.delete('/', withAuth, bookController.deleteBook);
+router.delete('/:id', withAuth, bookController.deleteBook);
 
 module.exports = router;

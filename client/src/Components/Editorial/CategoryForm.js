@@ -22,15 +22,18 @@ const getCategories = () => {
     });
 };
 
-
-
 const CategoryForm = Form.create({ name: 'form_in_modal' })(
   // eslint-disable-next-line
   class extends React.Component {
-
-
     render() {
-      const { visible, onCancel, onCreate, form, onChangeCategory,category } = this.props;
+      const {
+        visible,
+        onCancel,
+        onCreate,
+        form,
+        onChangeCategory,
+        category
+      } = this.props;
       const { getFieldDecorator } = form;
       return (
         <Modal
@@ -40,13 +43,17 @@ const CategoryForm = Form.create({ name: 'form_in_modal' })(
           onCancel={onCancel}
           onOk={onCreate}
         >
-          <Select defaultValue='00' style={{ width: 150 }} onChange={onChangeCategory}>
+          <Select
+            defaultValue="00"
+            style={{ width: 150 }}
+            onChange={onChangeCategory}
+          >
             {this.props.categories.map(category => (
               <Option value={category._id} key={category._id}>
                 {category.name}
               </Option>
             ))}
-            <Option value='00' >AGREGAR NUEVA CAT</Option>
+            <Option value="00">AGREGAR NUEVA CAT</Option>
           </Select>
 
           <Form layout="vertical">
@@ -80,10 +87,8 @@ class CategoryButton extends React.Component {
   state = {
     visible: false,
     selectedCategory: {},
-    categories: [],
-
+    categories: []
   };
-
 
   async componentDidMount() {
     const response = await fetch('api/category');
@@ -91,7 +96,7 @@ class CategoryButton extends React.Component {
     this.setState({ categories: categoriesResponse });
   }
 
-  addCategory = (values) => {
+  addCategory = values => {
     fetch('/api/category/createCategory', {
       method: 'POST',
       body: JSON.stringify(values),
@@ -102,13 +107,12 @@ class CategoryButton extends React.Component {
       .then(res => res.json())
       .catch(error => console.error('Error:', error))
       .then(response => console.log('Success:', response));
-
   };
 
-  editCategory = (values) => {
+  editCategory = values => {
     fetch('/api/category/updateCategory', {
       method: 'PUT',
-      body: JSON.stringify({...this.state.selectedCategory,...values}),
+      body: JSON.stringify({ ...this.state.selectedCategory, ...values }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -126,11 +130,13 @@ class CategoryButton extends React.Component {
     this.setState({ visible: false });
   };
 
-  handleChangeCategory = (value) => {
-    this.setState({ selectedCategory: this.state.categories.filter(category => category._id === value)[0] || {name:"",description:'',_id:'',__v:''} });
+  handleChangeCategory = value => {
+    this.setState({
+      selectedCategory: this.state.categories.filter(
+        category => category._id === value
+      )[0] || { name: '', description: '', _id: '', __v: '' }
+    });
   };
-
-
 
   handleCreate = () => {
     const { form } = this.formRef.props;
@@ -138,20 +144,18 @@ class CategoryButton extends React.Component {
       if (err) {
         return;
       }
-      
+
       if (!this.state.selectedCategory._id) {
         console.log('crear');
-      this.addCategory(values);
+        this.addCategory(values);
       }
       if (this.state.selectedCategory._id) {
         console.log('editar');
-      this.editCategory(values);
-
+        this.editCategory(values);
       }
       form.resetFields();
       this.setState({ visible: false });
     });
-
   };
 
   saveFormRef = formRef => {
@@ -161,22 +165,20 @@ class CategoryButton extends React.Component {
   render() {
     return (
       <Fragment>
-        {!this.props.edit ? (
-          <Button type="primary" onClick={this.showModal}>
-            Edit Categories
-          </Button>
-        ) : (
-            <Icon type="edit" onClick={this.showModal} />
-          )}
-        <CategoryForm
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.visible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-          onChangeCategory={this.handleChangeCategory}
-          categories={this.state.categories}
-          category = {this.state.selectedCategory}
-        />
+        <Button type="primary" onClick={this.showModal}>
+          Admin. de categorias
+        </Button>
+        {this.state.visible && (
+          <CategoryForm
+            wrappedComponentRef={this.saveFormRef}
+            visible={this.state.visible}
+            onCancel={this.handleCancel}
+            onCreate={this.handleCreate}
+            onChangeCategory={this.handleChangeCategory}
+            categories={this.state.categories}
+            category={this.state.selectedCategory}
+          />
+        )}
       </Fragment>
     );
   }

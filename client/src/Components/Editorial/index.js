@@ -9,7 +9,8 @@ import BooksList from './BooksList';
 import Cart from './Cart';
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
-const Editorial = () => {
+
+const Editorial = ({ history }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -31,6 +32,17 @@ const Editorial = () => {
       setIsloadingBooks(false);
     }
   }, [selectedCategory]);
+
+  useEffect(() => {
+    const cartInStorage = localStorage.getItem('predde-cart') || [];
+    setCart(cartInStorage);
+  }, []);
+
+  useEffect(() => {
+    checkLoggedIn();
+    fetchCategories();
+    fetchBooks();
+  }, [fetchBooks]);
 
   useEffect(() => {
     checkLoggedIn();
@@ -65,9 +77,11 @@ const Editorial = () => {
         amount: newCart[book._id].amount + book.amount
       };
       setCart(newCart);
+      localStorage.setItem('predde-cart', newCart);
     } else {
       newCart[book._id] = JSON.parse(JSON.stringify(book));
       setCart(newCart);
+      localStorage.setItem('predde-cart', newCart);
     }
   };
 
@@ -77,8 +91,19 @@ const Editorial = () => {
         className="header"
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
-        <div className="logo" />
-        {!isLoggedIn && <Login />}
+        <img src="logo.png" alt="logo" style={{ width: 64, height: 64 }} />
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridColumnGap: '10px'
+          }}
+        >
+          {!isLoggedIn && <Login />}
+          <div style={{ marginTop: 2 }}>
+            <Cart cart={cart} history={history} />
+          </div>
+        </div>
       </Header>
       <Content style={{ padding: '0 50px' }}>
         <Layout style={{ padding: '24px 0', background: '#fff' }}>
@@ -91,7 +116,7 @@ const Editorial = () => {
               inlineCollapsed
             >
               {isLoadingCategories ? (
-                <div style={{ width: 100, marginLeft: 20 }}>
+                <div style={{ width: '80%', marginLeft: 20, marginRight: 20 }}>
                   <Skeleton paragraph={{ rows: 12 }} active />
                 </div>
               ) : (
@@ -124,18 +149,22 @@ const Editorial = () => {
                       {category.name}
                     </Menu.Item>
                   ))}
-                  <CategoryForm />
                 </SubMenu>
               )}
+              <CategoryForm />
             </Menu>
           </Sider>
-          <Content style={{ padding: '0 24px' }}>
+          <Content style={{ padding: '0 24px', height: '90vh' }}>
             {isLoadingBooks ? (
               <Skeleton paragraph={{ rows: 12 }} active />
             ) : (
               <Fragment>
-                <Cart cart={cart} />
-                <BooksList books={books} addToCart={addToCart} />
+                <BooksList
+                  books={books}
+                  addToCart={addToCart}
+                  fetchBooks={fetchBooks}
+                  isLoggedIn={isLoggedIn}
+                />
               </Fragment>
             )}
           </Content>
