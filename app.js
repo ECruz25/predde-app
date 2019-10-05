@@ -6,6 +6,8 @@ const userRouter = require('./features/User/userRoutes');
 const categoryRoutes = require('./features/Category/categoryRoutes');
 const bookRoutes = require('./features/Book/bookRoutes');
 const orderRoutes = require('./features/Order/orderRoutes');
+const emailRoutes = require('./features/Email/emailRoutes');
+
 
 var app = express();
 app.use('/uploads', express.static('uploads'));
@@ -22,5 +24,7 @@ app.use('/api/user', userRouter);
 app.use('/api/category', categoryRoutes);
 app.use('/api/book', bookRoutes);
 app.use('/api/order', orderRoutes);
+app.use('/api/email', emailRoutes);
+
 
 module.exports = app;
