@@ -5,6 +5,7 @@ import LandingPage from './Components/LandingPage';
 import Editorial from './Components/Editorial';
 import NotFoundPage from './Components/NotFoundPage';
 import CompleteOrder from './Components/Editorial/CompleteOrder';
+import Imprenta from './Components/Imprenta';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             exact
             component={CompleteOrder}
           />
+          <Route path="/imprenta" exact component={Imprenta} />
           <Route path="*" exact component={NotFoundPage} />
         </Switch>
       </Router>
