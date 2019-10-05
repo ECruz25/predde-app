@@ -1,11 +1,13 @@
 const Order = require('./Order');
 
-exports.createOrder = async (req, res) => {
+exports.createOrder = async (req, res, next) => {
   try {
+    console.log('llegue a ala orden');
+    console.log(req.body);
     if (req.body.total > 0) {
       const order = new Order(req.body);
       await order.save();
-      res.sendStatus(200);
+      next();
     } else {
       res.sendStatus(500);
     }

@@ -118,30 +118,25 @@ class BookButton extends React.Component {
       }
       const config = {
         headers: {
-          'content-type': 'multipart/form-data'
+          'Content-Type': 'application/json'
         }
       };
-      axios
-        .post(
-          '/api/order',
-          {
-            ...values,
-            books: this.props.cart.map(book => book._id),
-            bookAmount: this.props.cart.map(book => book.amount),
-            total: this.props.cart
-              .map(t => t.total)
-              .reduce((total, num) => total + num)
-          },
-          config
-        )
-        .then(response => {
-          message.success(`Se ha completado la orden`);
-          this.setState({ visible: false });
-          form.resetFields();
-        })
-        .catch(error => {
-          message.error(error);
-        });
+      const request = {
+        ...values,
+        books: Object.values(this.props.cart).map(book => book._id),
+        bookAmount: Object.values(this.props.cart).map(book => book.amount),
+        total: Object.values(this.props.cart)
+          .map(t => t.amount * t.price)
+          .reduce((total, num) => total + num),
+        agreed: true
+      };
+      axios.post('/api/order', request, config).then(response => {
+        message.success(`Se ha completado la orden`);
+        this.setState({ visible: false });
+        this.props.setShowCompleteOrderForm(false);
+        form.resetFields();
+        this.props.clearCart();
+      });
     });
   };
 
@@ -150,6 +145,7 @@ class BookButton extends React.Component {
   };
 
   render() {
+    console.log(this.props.cart);
     return (
       <OrderForm
         wrappedComponentRef={this.saveFormRef}

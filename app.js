@@ -21,6 +21,6 @@ app.get('/', function(req, res) {
 app.use('/api/user', userRouter);
 app.use('/api/category', categoryRoutes);
 app.use('/api/book', bookRoutes);
-app.use('/api/order', bookRoutes);
+app.use('/api/order', orderRoutes);
 
 module.exports = app;
